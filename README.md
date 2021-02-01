@@ -57,5 +57,6 @@ real"
 ```
 
 Caso o projeto não rode talvez seja necessário instalar essas duas libs no seus ambiente Linux: libnss3-dev e libgbm-dev
+
 sudo apt-get install libnss3-dev
 sudo apt-get install libgbm-dev
