@@ -1,5 +1,4 @@
-# Instruções | Crawler para pegar preços atualizados
-
+# Instruções | Crawler para pegar as informações e melhor preço de apartamentos
 ## No terminal execute
 
 ```sh
@@ -33,30 +32,59 @@ Indico o Insomnia para montar a request
 
 ### Exemplo de Response para a rota /buscar
 
-"Desenvolver o projeto do robô que faz a busca dos preços em tempo
-real"
-
 ```json
 [
+  [
+    [
+      {
+        "url": "https://example.com/no-photo/"
+      },
+      {
+        "url": "https://example.com/no-photo/"
+      },
+      {
+        "url": "https://example.com/no-photo/"
+      }
+    ],
+    [
+      {
+        "title": "Lorem"
+      },
+      {
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore"
+      }
+    ],
     {
-        "preco": "R$ 896,50"
-    },
-    {
-        "preco": "R$ 986,00"
-    },
-    {
-        "preco": "R$ 1.015,00"
-    },
-    {
-        "preco": "R$ 1.065,50"
-    },
-    {
-        "preco": "R$ 1.100,00"
+      "price": "R$ 937,50"
     }
+  ],
+  [
+    [
+      {
+        "url": "https://example.com/no-photo/"
+      },
+      {
+        "url": "https://example.com/no-photo/"
+      },
+      {
+        "url": "https://example.com/no-photo/"
+      }
+    ],
+    [
+      {
+        "title": "Lorem Ipsum"
+      },
+      {
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore"
+      }
+    ],
+    {
+      "price": "R$ 1.056,75"
+    }
+  ]
 ]
 ```
 
 Caso o projeto não rode talvez seja necessário instalar essas duas libs no seus ambiente Linux: libnss3-dev e libgbm-dev
 
-sudo apt-get install libnss3-dev
-sudo apt-get install libgbm-dev
+sudo apt-get install libnss3-dev && sudo apt-get install libgbm-dev

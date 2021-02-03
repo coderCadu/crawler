@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const _ = require('lodash');
 
 async function crawler(checkInDate, checkOutDate) {
     const browser = await puppeteer.launch({
@@ -10,20 +11,56 @@ async function crawler(checkInDate, checkOutDate) {
     console.log(searchEngineUrl);
     await page.goto(searchEngineUrl);
 
-    const pricesList = await page.evaluate(() => {
-        const nodeList = document.querySelectorAll('.pricesResultsTextColor');
-        const ratePriceArray = [...nodeList];
-        const pricesList = ratePriceArray.map(({ innerText }) => ({ 
-            preco: innerText,
-        }));
+    const { imgUrlList, apartmentTextList, bestPriceList } = await page.evaluate(() => {
+        // pegar a imagem de apresentação de cada apartamento
+        const nodeListImgs = document.querySelectorAll('.fancybox-thumbs');
+        const imgsArray = [...nodeListImgs];
+        const imgUrlList = imgsArray.map(({ href }) => ({ url: href }));
 
-        return pricesList;
+        // pegar o texto de título e a descrição de cada apartamento
+        const nodeListExcerpt = document.querySelectorAll('.excerpt a[rel]');
+        const excerptArray = [...nodeListExcerpt];
+        const apartmentTextList = excerptArray.map((currentItem, index) => {
+            const apartmentText = {
+                title: index % 2 === 0 ? excerptArray[index].innerText : null,
+                description: index % 2 !== 0 ? excerptArray[index].innerText : null
+            };
+
+            return apartmentText;
+        });
+
+        // pegar o melhor preço de cada apartamento
+        const nodeListBestPrice = document.querySelectorAll('h6.bestPriceTextColor');
+        const bestPriceArray = [...nodeListBestPrice];
+        const bestPriceList = bestPriceArray.map(({ innerText }) => ({ price: innerText }))
+
+        return { imgUrlList, apartmentTextList, bestPriceList };
     });
 
-    const pricesListJson = JSON.stringify(pricesList);
+    // dividir por grupos de imagens
+    const imgGroupsList = _.chunk(imgUrlList, 3);
+
+    // separar título e descrição no mesmo objeto
+    const apartmentTextListDiv = _.chunk(apartmentTextList, 2);
+
+    function removeEmpty(obj) {
+        Object.keys(obj).forEach(function(key) {
+            (obj[key] && typeof obj[key] === 'object') && removeEmpty(obj[key]) ||
+            (obj[key] === '' || obj[key] === null) && delete obj[key]
+        });
+        return obj;
+    };
+
+    const apartmentText = removeEmpty(apartmentTextListDiv);
+
+    // formar um único objeto com todas as informações
+    const apartmentList = _.zip(imgGroupsList, apartmentText, bestPriceList);
+    
+    // convert to json
+    const apartmentListJson = JSON.stringify(apartmentList);
 
     await browser.close();
-    return pricesListJson;
+    return apartmentListJson;
 }
 
 module.exports = crawler;
